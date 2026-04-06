@@ -19,6 +19,99 @@ A production-ready REST API backend for a **Finance Dashboard System** built wit
 
 ---
 
+## Live Demo
+
+| | URL |
+|-|-----|
+| **Base URL** | https://finance-backend-2nfa.onrender.com |
+| **Swagger UI** | https://finance-backend-2nfa.onrender.com/swagger-ui/index.html |
+| **API Docs** | https://finance-backend-2nfa.onrender.com/v3/api-docs |
+
+> **Note:** The app is hosted on Render free tier. It may take **30-60 seconds** to wake up on the first request. Please wait and retry if you get a timeout.
+
+---
+
+## How to Use Swagger UI
+
+The Swagger UI allows you to test all APIs directly from the browser without Postman.
+
+### Step 1: Open Swagger UI
+```
+https://finance-backend-2nfa.onrender.com/swagger-ui/index.html
+```
+
+### Step 2: Register a User
+```
+1. Click on "1. Authentication" section
+2. Click POST /api/auth/register
+3. Click "Try it out"
+4. Paste this in the request body:
+{
+  "name": "Admin User",
+  "email": "admin@finance.com",
+  "password": "admin123",
+  "role": "ADMIN"
+}
+5. Click "Execute"
+6. You should see 201 Created response
+```
+
+### Step 3: Login and Get Token
+```
+1. Click POST /api/auth/login
+2. Click "Try it out"
+3. Paste:
+{
+  "email": "admin@finance.com",
+  "password": "admin123"
+}
+4. Click "Execute"
+5. Copy the token from the response:
+{
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiJ9...."
+  }
+}
+```
+
+### Step 4: Authorize with Token
+```
+1. Click the "Authorize 🔒" button at the TOP RIGHT of the Swagger page
+2. A popup will appear
+3. In the "Value" field paste ONLY the token
+   (Do NOT type "Bearer" - Swagger adds it automatically)
+4. Click "Authorize"
+5. Click "Close"
+```
+
+### Step 5: Now All APIs Work!
+```
+You are now authenticated as ADMIN.
+All APIs will work exactly like Postman.
+The 🔒 icon on each endpoint will show as locked.
+```
+
+---
+
+## Quick Test Guide in Swagger
+
+After authorizing, test in this order:
+
+| Step | Action | Endpoint | Expected |
+|------|--------|----------|---------|
+| 1 | Register ADMIN | POST /api/auth/register | 201 |
+| 2 | Login | POST /api/auth/login | 200 + token |
+| 3 | Authorize | Click 🔒 Authorize button | Token set |
+| 4 | Create Transaction | POST /api/transactions | 201 |
+| 5 | Get Transactions | GET /api/transactions | 200 |
+| 6 | Get Dashboard | GET /api/dashboard/summary | 200 |
+| 7 | Register VIEWER | POST /api/auth/register (role: VIEWER) | 201 |
+| 8 | Login as VIEWER | POST /api/auth/login | 200 + token |
+| 9 | Authorize as VIEWER | Click 🔒 with viewer token | Token set |
+| 10 | Try Transactions as VIEWER | GET /api/transactions | 403 Forbidden |
+
+---
+
 ## Project Structure
 
 ```
@@ -28,7 +121,8 @@ finance-pgvector/
 │   │   ├── java/com/finance/
 │   │   │   ├── FinanceApplication.java
 │   │   │   ├── config/
-│   │   │   │   └── SecurityConfig.java
+│   │   │   │   ├── SecurityConfig.java
+│   │   │   │   └── OpenApiConfig.java
 │   │   │   ├── controller/
 │   │   │   │   ├── AuthController.java
 │   │   │   │   ├── UserController.java
@@ -68,8 +162,7 @@ finance-pgvector/
 │   │   │       └── UnauthorizedException.java
 │   │   └── resources/
 │   │       ├── application.properties
-│   │       └── db/
-│   │           └── init.sql
+│   │       └── schema.sql
 │   └── test/
 │       └── java/com/finance/
 │           ├── TransactionServiceTest.java
@@ -125,7 +218,7 @@ spring.datasource.password=YOUR_PASSWORD_HERE
 
 ---
 
-## How to Run
+## How to Run Locally
 
 ```bash
 # Clone the repository
@@ -137,6 +230,8 @@ mvn spring-boot:run
 ```
 
 Server starts at: **http://localhost:8080**
+
+Swagger UI locally: **http://localhost:8080/swagger-ui/index.html**
 
 ---
 
@@ -389,6 +484,8 @@ All errors follow a consistent format:
 **pgvector Semantic Search** — Each transaction stores a vector embedding enabling meaning-based search. Mock embeddings are used by default and can be replaced with real OpenAI embeddings by updating `EmbeddingService.java`.
 
 **EAGER Loading** — Transaction's `createdBy` field uses EAGER fetch type to prevent Hibernate lazy loading issues during JSON serialization.
+
+**Schema Initialization** — Uses `schema.sql` with `IF NOT EXISTS` for safe, idempotent table creation on every startup without data loss.
 
 ---
 
