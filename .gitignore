@@ -1,0 +1,43 @@
+# ========================
+# Maven Build Files
+# ========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ========================
+# IntelliJ IDEA
+# ========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ========================
+# Sensitive Configuration
+# ========================
+application-local.properties
+application-secret.properties
+*.env
+.env
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================
+# Maven Wrapper (optional)
+# ========================
+!.mvn/wrapper/maven-wrapper.jar
